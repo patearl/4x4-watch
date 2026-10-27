@@ -23,8 +23,15 @@ A standalone Wear OS app (built for Pixel Watch 2) that runs the **Norwegian 4×
   - Plus a short **3-2-1** tick in the last three seconds before each change.
 - Live heart rate from the watch sensor, color-coded against your max HR:
   grey < 60%, blue 60–70%, yellow 70–85%, **green 85–95% (the 4×4 target)**, red > 95%.
-- During hard intervals the heart icon becomes a cue toward the 90% midpoint: a heart in the 88–92%
-  sweet spot, a small arrow when you're inside 85–95% but off-centre, and a big arrow outside it.
+- Next to the bpm, a heart or an arrow tells you which way to steer for the current phase:
+
+  | Phase | Target (% of max HR) | Heart | Small arrow | Big arrow |
+  |---|---|---|---|---|
+  | Warm-up | build to 70% | at or above a bar that rises from 60% to 70% over the warm-up | ↑ within 5% below the bar | ↑ further below |
+  | Hard | 85–95% | 88–92% | ↑ 85–88%, ↓ 92–95% | ↑ under 85%, ↓ over 95% |
+  | Recovery | 65–75% (NTNU recommends ~70%) | 68–72% | ↑ 65–68%, ↓ 72–75% | ↑ under 65%, ↓ over 75% |
+  | Cool-down | 60% or below | at or under 60% | ↓ 60–65% | ↓ over 65% |
+
 - Max HR is set in the app (tap +/- or turn the crown). The setting is saved.
 - A foreground service keeps the timer and vibrations running with the screen off. An Ongoing Activity
   icon on the watch face takes you back to the app.
@@ -63,3 +70,10 @@ Requires JDK 17+ and the Android SDK (platform 35).
 ```
 
 The APK ends up in `app/build/outputs/apk/debug/app-debug.apk`.
+
+To render the workout screen on a Pixel Watch 2-sized display into `screenshots/` (useful when
+changing the layout):
+
+```
+./gradlew testDebugUnitTest -Pscreenshots
+```

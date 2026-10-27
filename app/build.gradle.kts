@@ -46,6 +46,17 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            // Screenshot renders are slow and only for eyeballing layout: ./gradlew testDebugUnitTest -Pscreenshots
+            if (project.hasProperty("screenshots")) {
+                it.systemProperty("screenshotDir", rootProject.file("screenshots").absolutePath)
+            } else {
+                it.exclude("**/*Screenshots*")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -63,4 +74,8 @@ dependencies {
     implementation(libs.androidx.wear.ongoing)
 
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

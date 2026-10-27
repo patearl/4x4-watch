@@ -1,6 +1,7 @@
 package com.patearl.fourbyfour.ui
 
 import androidx.compose.ui.graphics.Color
+import com.patearl.fourbyfour.workout.PhaseType
 
 /** Heart-rate zones relative to max HR. The 4×4 target for hard intervals is 85–95%. */
 enum class HrZone(val color: Color, val label: String) {
@@ -25,24 +26,48 @@ enum class HrZone(val color: Color, val label: String) {
     }
 }
 
-/**
- * Which way to push during a hard interval. The 85–95% target has an inner 88–92% sweet spot
- * around its 90% midpoint: inside it you're on target, elsewhere in 85–95% nudge gently,
- * and outside 85–95% push firmly.
- */
-enum class HrCue {
-    BIG_UP, SMALL_UP, ON_TARGET, SMALL_DOWN, BIG_DOWN;
+/** Which way to steer heart rate: the heart means "hold it here". */
+enum class HrCue { BIG_UP, SMALL_UP, ON_TARGET, SMALL_DOWN, BIG_DOWN }
 
-    companion object {
-        fun of(bpm: Int, maxHr: Int): HrCue {
-            val pct = bpm * 100f / maxHr
-            return when {
-                pct < 85f -> BIG_UP
-                pct < 88f -> SMALL_UP
-                pct <= 92f -> ON_TARGET
-                pct <= 95f -> SMALL_DOWN
-                else -> BIG_DOWN
+/**
+ * Per-phase heart-rate targets, as % of max HR:
+ * - Warm-up: build toward the top of 60–70%. The bar for "on target" rises from 60% to 70% over
+ *   the warm-up, so it pushes harder as you go. Being above it is fine.
+ * - Hard: 85–95%, steering to the 88–92% middle.
+ * - Recovery: 65–75%, steering to 68–72% (NTNU recommends ~70% to clear lactate).
+ * - Cool-down: 60% or below. Going easier is never wrong.
+ */
+object HrTargets {
+    fun cue(phase: PhaseType, bpm: Int, maxHr: Int, phaseProgress: Float): HrCue {
+        val pct = bpm * 100f / maxHr
+        return when (phase) {
+            PhaseType.WARM_UP -> {
+                val floor = 60f + 10f * phaseProgress.coerceIn(0f, 1f)
+                when {
+                    pct >= floor -> HrCue.ON_TARGET
+                    pct >= floor - 5f -> HrCue.SMALL_UP
+                    else -> HrCue.BIG_UP
+                }
             }
+            PhaseType.HARD -> banded(pct, low = 85f, high = 95f)
+            PhaseType.RECOVERY -> banded(pct, low = 65f, high = 75f)
+            PhaseType.COOL_DOWN -> when {
+                pct <= 60f -> HrCue.ON_TARGET
+                pct <= 65f -> HrCue.SMALL_DOWN
+                else -> HrCue.BIG_DOWN
+            }
+        }
+    }
+
+    /** Heart in the inner 4 points around the midpoint, small arrows elsewhere in range, big outside. */
+    private fun banded(pct: Float, low: Float, high: Float): HrCue {
+        val mid = (low + high) / 2
+        return when {
+            pct < low -> HrCue.BIG_UP
+            pct < mid - 2f -> HrCue.SMALL_UP
+            pct <= mid + 2f -> HrCue.ON_TARGET
+            pct <= high -> HrCue.SMALL_DOWN
+            else -> HrCue.BIG_DOWN
         }
     }
 }

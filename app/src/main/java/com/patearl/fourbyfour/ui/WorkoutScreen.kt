@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,43 +63,49 @@ fun WorkoutScreen(
             trackColor = accent.copy(alpha = 0.2f),
             strokeWidth = 6.dp,
         )
+        // Sizes are fixed so the content stays inside the ring whatever the phase or HR cue.
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = phase.type.label.uppercase(),
                 color = accent,
                 fontWeight = FontWeight.Bold,
-                fontSize = if (phase.type == PhaseType.HARD) 20.sp else 16.sp,
+                fontSize = if (phase.type == PhaseType.HARD) 18.sp else 16.sp,
+                lineHeight = 20.sp,
             )
             Text(
                 text = if (phase.round > 0) "Round ${phase.round} of ${WorkoutPlan.ROUNDS}" else " ",
-                style = MaterialTheme.typography.caption2,
+                fontSize = 12.sp,
+                lineHeight = 14.sp,
             )
             Text(
                 text = formatCountdown(state.remainingMs),
-                fontSize = 48.sp,
+                fontSize = 42.sp,
+                lineHeight = 46.sp,
                 fontWeight = FontWeight.Medium,
+                // Tabular digits so the countdown doesn't shift sideways as it ticks.
+                style = TextStyle(fontFeatureSettings = "tnum"),
                 color = if (paused) Color.Gray else Color.White,
             )
-            HeartRateRow(state.heartRate, maxHr, showCue = phase.type == PhaseType.HARD)
-            Spacer(Modifier.height(6.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            HeartRateRow(state.heartRate, maxHr, phase.type, state.phaseProgress)
+            Spacer(Modifier.height(2.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Button(
                     onClick = if (paused) onResume else onPause,
-                    modifier = Modifier.size(ButtonDefaults.SmallButtonSize),
+                    modifier = Modifier.size(ButtonDefaults.ExtraSmallButtonSize),
                     colors = ButtonDefaults.secondaryButtonColors(),
                 ) {
                     if (paused) {
-                        Icon(Icons.Filled.PlayArrow, "Resume")
+                        Icon(Icons.Filled.PlayArrow, "Resume", Modifier.size(18.dp))
                     } else {
-                        Text("❚❚", fontSize = 12.sp)
+                        Text("❚❚", fontSize = 10.sp)
                     }
                 }
                 Button(
                     onClick = { confirmStop = true },
-                    modifier = Modifier.size(ButtonDefaults.SmallButtonSize),
+                    modifier = Modifier.size(ButtonDefaults.ExtraSmallButtonSize),
                     colors = ButtonDefaults.secondaryButtonColors(),
                 ) {
-                    Icon(Icons.Filled.Close, "Stop")
+                    Icon(Icons.Filled.Close, "Stop", Modifier.size(18.dp))
                 }
             }
         }
@@ -122,23 +129,27 @@ fun WorkoutScreen(
 }
 
 @Composable
-private fun HeartRateRow(bpm: Int?, maxHr: Int, showCue: Boolean) {
+private fun HeartRateRow(bpm: Int?, maxHr: Int, phase: PhaseType, phaseProgress: Float) {
     val zone = bpm?.let { HrZone.of(it, maxHr) }
     val color = zone?.color ?: Color.Gray
-    val cue = if (showCue && bpm != null) HrCue.of(bpm, maxHr) else HrCue.ON_TARGET
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        when (cue) {
-            HrCue.ON_TARGET -> Icon(Icons.Filled.Favorite, "Heart rate", tint = color, modifier = Modifier.size(16.dp))
-            HrCue.SMALL_UP -> Icon(ArrowUp, "Slightly low", tint = color, modifier = Modifier.size(14.dp))
-            HrCue.BIG_UP -> Icon(ArrowUp, "Too low", tint = color, modifier = Modifier.size(28.dp))
-            HrCue.SMALL_DOWN -> Icon(ArrowDown, "Slightly high", tint = color, modifier = Modifier.size(14.dp))
-            HrCue.BIG_DOWN -> Icon(ArrowDown, "Too high", tint = color, modifier = Modifier.size(28.dp))
+    val cue = if (bpm != null) HrTargets.cue(phase, bpm, maxHr, phaseProgress) else HrCue.ON_TARGET
+    Row(Modifier.height(26.dp), verticalAlignment = Alignment.CenterVertically) {
+        // Fixed-size slot so swapping heart/arrows never moves the layout.
+        Box(Modifier.size(26.dp), contentAlignment = Alignment.Center) {
+            when (cue) {
+                HrCue.ON_TARGET -> Icon(Icons.Filled.Favorite, "Heart rate", tint = color, modifier = Modifier.size(16.dp))
+                HrCue.SMALL_UP -> Icon(ArrowUp, "Slightly low", tint = color, modifier = Modifier.size(14.dp))
+                HrCue.BIG_UP -> Icon(ArrowUp, "Too low", tint = color, modifier = Modifier.size(26.dp))
+                HrCue.SMALL_DOWN -> Icon(ArrowDown, "Slightly high", tint = color, modifier = Modifier.size(14.dp))
+                HrCue.BIG_DOWN -> Icon(ArrowDown, "Too high", tint = color, modifier = Modifier.size(26.dp))
+            }
         }
         Spacer(Modifier.width(4.dp))
         Text(
             text = bpm?.toString() ?: "--",
             color = color,
-            fontSize = 22.sp,
+            fontSize = 20.sp,
+            lineHeight = 24.sp,
             fontWeight = FontWeight.Bold,
         )
         if (bpm != null) {
