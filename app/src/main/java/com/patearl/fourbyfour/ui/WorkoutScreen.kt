@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.materialIcon
+import androidx.compose.material.icons.materialPath
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.PlayArrow
@@ -22,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,7 +79,7 @@ fun WorkoutScreen(
                 fontWeight = FontWeight.Medium,
                 color = if (paused) Color.Gray else Color.White,
             )
-            HeartRateRow(state.heartRate, maxHr)
+            HeartRateRow(state.heartRate, maxHr, showCue = phase.type == PhaseType.HARD)
             Spacer(Modifier.height(6.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Button(
@@ -119,11 +122,18 @@ fun WorkoutScreen(
 }
 
 @Composable
-private fun HeartRateRow(bpm: Int?, maxHr: Int) {
+private fun HeartRateRow(bpm: Int?, maxHr: Int, showCue: Boolean) {
     val zone = bpm?.let { HrZone.of(it, maxHr) }
     val color = zone?.color ?: Color.Gray
+    val cue = if (showCue && bpm != null) HrCue.of(bpm, maxHr) else HrCue.ON_TARGET
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Filled.Favorite, contentDescription = "Heart rate", tint = color, modifier = Modifier.size(16.dp))
+        when (cue) {
+            HrCue.ON_TARGET -> Icon(Icons.Filled.Favorite, "Heart rate", tint = color, modifier = Modifier.size(16.dp))
+            HrCue.SMALL_UP -> Icon(ArrowUp, "Slightly low", tint = color, modifier = Modifier.size(14.dp))
+            HrCue.BIG_UP -> Icon(ArrowUp, "Too low", tint = color, modifier = Modifier.size(28.dp))
+            HrCue.SMALL_DOWN -> Icon(ArrowDown, "Slightly high", tint = color, modifier = Modifier.size(14.dp))
+            HrCue.BIG_DOWN -> Icon(ArrowDown, "Too high", tint = color, modifier = Modifier.size(28.dp))
+        }
         Spacer(Modifier.width(4.dp))
         Text(
             text = bpm?.toString() ?: "--",
@@ -155,4 +165,20 @@ fun FinishedScreen(onDone: () -> Unit) {
 private fun formatCountdown(remainingMs: Long): String {
     val totalSeconds = (remainingMs + 999) / 1000
     return "%d:%02d".format(totalSeconds / 60, totalSeconds % 60)
+}
+
+private val ArrowUp: ImageVector = materialIcon(name = "ArrowUp") {
+    materialPath {
+        moveTo(4f, 12f); lineToRelative(1.41f, 1.41f); lineTo(11f, 7.83f); verticalLineTo(20f)
+        horizontalLineToRelative(2f); verticalLineTo(7.83f); lineToRelative(5.58f, 5.59f)
+        lineTo(20f, 12f); lineToRelative(-8f, -8f); close()
+    }
+}
+
+private val ArrowDown: ImageVector = materialIcon(name = "ArrowDown") {
+    materialPath {
+        moveTo(20f, 12f); lineToRelative(-1.41f, -1.41f); lineTo(13f, 16.17f); verticalLineTo(4f)
+        horizontalLineToRelative(-2f); verticalLineToRelative(12.17f); lineToRelative(-5.58f, -5.59f)
+        lineTo(4f, 12f); lineToRelative(8f, 8f); close()
+    }
 }

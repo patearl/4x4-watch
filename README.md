@@ -23,6 +23,8 @@ A standalone Wear OS app (built for Pixel Watch 2) that runs the **Norwegian 4×
   - Plus a short **3-2-1** tick in the last three seconds before each change.
 - Live heart rate from the watch sensor, color-coded against your max HR:
   grey < 60%, blue 60–70%, yellow 70–85%, **green 85–95% (the 4×4 target)**, red > 95%.
+- During hard intervals the heart icon becomes a cue toward the 90% midpoint: a heart in the 88–92%
+  sweet spot, a small arrow when you're inside 85–95% but off-centre, and a big arrow outside it.
 - Max HR is set in the app (tap +/- or turn the crown). The setting is saved.
 - A foreground service keeps the timer and vibrations running with the screen off. An Ongoing Activity
   icon on the watch face takes you back to the app.

@@ -24,3 +24,25 @@ enum class HrZone(val color: Color, val label: String) {
         }
     }
 }
+
+/**
+ * Which way to push during a hard interval. The 85–95% target has an inner 88–92% sweet spot
+ * around its 90% midpoint: inside it you're on target, elsewhere in 85–95% nudge gently,
+ * and outside 85–95% push firmly.
+ */
+enum class HrCue {
+    BIG_UP, SMALL_UP, ON_TARGET, SMALL_DOWN, BIG_DOWN;
+
+    companion object {
+        fun of(bpm: Int, maxHr: Int): HrCue {
+            val pct = bpm * 100f / maxHr
+            return when {
+                pct < 85f -> BIG_UP
+                pct < 88f -> SMALL_UP
+                pct <= 92f -> ON_TARGET
+                pct <= 95f -> SMALL_DOWN
+                else -> BIG_DOWN
+            }
+        }
+    }
+}
