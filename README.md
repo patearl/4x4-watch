@@ -6,10 +6,10 @@ A standalone Wear OS app (built for Pixel Watch 2) that runs the **Norwegian 4×
 |---|---|---|
 | Warm-up | 10 min | easy |
 | 4 × hard | 4 min each | 85–95% HRmax |
-| 4 × active recovery | 3 min each, after each hard interval | easy |
-| Cool-down | 5 min | easy |
+| 3 × active recovery | 3 min, between hard intervals | easy |
+| Cool-down | 5 min, straight after the last hard interval | easy |
 
-43 minutes in total.
+40 minutes in total.
 
 ## Features
 

@@ -8,9 +8,9 @@ class WorkoutPlanTest {
     private val minute = 60_000L
 
     @Test
-    fun totalIs43Minutes() {
-        assertEquals(43 * minute, WorkoutPlan.totalMs)
-        assertEquals(10, WorkoutPlan.phases.size)
+    fun totalIs40Minutes() {
+        assertEquals(40 * minute, WorkoutPlan.totalMs)
+        assertEquals(9, WorkoutPlan.phases.size)
     }
 
     @Test
@@ -31,8 +31,9 @@ class WorkoutPlanTest {
         assertEquals(PhaseType.HARD, lastHard.phase.type)
         assertEquals(4, lastHard.phase.round)
 
-        assertEquals(PhaseType.COOL_DOWN, WorkoutPlan.positionAt(38 * minute)!!.phase.type)
-        assertEquals(1, WorkoutPlan.positionAt(43 * minute - 1)!!.remainingMs)
-        assertNull(WorkoutPlan.positionAt(43 * minute))
+        // Cool-down follows the last hard interval directly, with no recovery in between.
+        assertEquals(PhaseType.COOL_DOWN, WorkoutPlan.positionAt(35 * minute)!!.phase.type)
+        assertEquals(1, WorkoutPlan.positionAt(40 * minute - 1)!!.remainingMs)
+        assertNull(WorkoutPlan.positionAt(40 * minute))
     }
 }

@@ -13,7 +13,10 @@ data class Phase(val type: PhaseType, val durationMs: Long, val round: Int = 0)
 /** Where the workout is at a given elapsed time. */
 data class Position(val index: Int, val phase: Phase, val remainingMs: Long)
 
-/** The Norwegian 4×4: 10 min warm-up, 4 × (4 min hard + 3 min recovery), 5 min cool-down. */
+/**
+ * The Norwegian 4×4: 10 min warm-up, 4 × 4 min hard with 3 min recovery between them,
+ * then straight into a 5 min cool-down after the last hard interval.
+ */
 object WorkoutPlan {
     const val ROUNDS = 4
     private const val MINUTE = 60_000L
@@ -22,7 +25,7 @@ object WorkoutPlan {
         add(Phase(PhaseType.WARM_UP, 10 * MINUTE))
         for (round in 1..ROUNDS) {
             add(Phase(PhaseType.HARD, 4 * MINUTE, round))
-            add(Phase(PhaseType.RECOVERY, 3 * MINUTE, round))
+            if (round < ROUNDS) add(Phase(PhaseType.RECOVERY, 3 * MINUTE, round))
         }
         add(Phase(PhaseType.COOL_DOWN, 5 * MINUTE))
     }

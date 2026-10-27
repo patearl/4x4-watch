@@ -52,7 +52,7 @@ fun HomeScreen(maxHr: Int, onStart: () -> Unit, onEditMaxHr: () -> Unit) {
             }
             item {
                 Text(
-                    "10′ warm-up · 4 × (4′ hard + 3′ easy) · 5′ cool-down",
+                    "10′ warm-up · 4 × 4′ hard, 3′ easy between · 5′ cool-down",
                     style = MaterialTheme.typography.caption3,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colors.onSurfaceVariant,
