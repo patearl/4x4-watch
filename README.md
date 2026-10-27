@@ -30,7 +30,7 @@ A standalone Wear OS app (built for Pixel Watch 2) that runs the **Norwegian 4×
   | Warm-up | build to 70% | at or above a bar that rises from 60% to 70% over the warm-up | ↑ within 5% below the bar | ↑ further below |
   | Hard | 85–95% | 88–92% | ↑ 85–88%, ↓ 92–95% | ↑ under 85%, ↓ over 95% |
   | Recovery | 65–75% (NTNU recommends ~70%) | 68–72% | ↑ 65–68%, ↓ 72–75% | ↑ under 65%, ↓ over 75% |
-  | Cool-down | 60% or below | at or under 60% | ↓ 60–65% | ↓ over 65% |
+  | Cool-down | ease down to 60% | at or under a ceiling that falls from 75% to 60% over the cool-down | ↓ within 5% above the ceiling | ↓ further above |
 
 - Max HR is set in the app (tap +/- or turn the crown). The setting is saved.
 - A foreground service keeps the timer and vibrations running with the screen off. An Ongoing Activity

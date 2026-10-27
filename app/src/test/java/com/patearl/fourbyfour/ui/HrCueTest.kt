@@ -47,10 +47,19 @@ class HrCueTest {
     }
 
     @Test
-    fun coolDownOnlySaysSlowDown() {
-        assertEquals(HrCue.ON_TARGET, cue(PhaseType.COOL_DOWN, 40))
-        assertEquals(HrCue.ON_TARGET, cue(PhaseType.COOL_DOWN, 60))
-        assertEquals(HrCue.SMALL_DOWN, cue(PhaseType.COOL_DOWN, 63))
-        assertEquals(HrCue.BIG_DOWN, cue(PhaseType.COOL_DOWN, 70))
+    fun coolDownCeilingFallsAndNeverSaysSpeedUp() {
+        // Start: up to 75% is fine.
+        assertEquals(HrCue.ON_TARGET, cue(PhaseType.COOL_DOWN, 75, progress = 0f))
+        assertEquals(HrCue.SMALL_DOWN, cue(PhaseType.COOL_DOWN, 78, progress = 0f))
+        assertEquals(HrCue.BIG_DOWN, cue(PhaseType.COOL_DOWN, 90, progress = 0f))
+        // Halfway: ceiling is 67.5%.
+        assertEquals(HrCue.ON_TARGET, cue(PhaseType.COOL_DOWN, 67, progress = 0.5f))
+        assertEquals(HrCue.SMALL_DOWN, cue(PhaseType.COOL_DOWN, 70, progress = 0.5f))
+        // End: down to 60%, and the 75% that was fine at the start is now well over.
+        assertEquals(HrCue.ON_TARGET, cue(PhaseType.COOL_DOWN, 60, progress = 1f))
+        assertEquals(HrCue.SMALL_DOWN, cue(PhaseType.COOL_DOWN, 63, progress = 1f))
+        assertEquals(HrCue.BIG_DOWN, cue(PhaseType.COOL_DOWN, 75, progress = 1f))
+        // Under is always fine.
+        assertEquals(HrCue.ON_TARGET, cue(PhaseType.COOL_DOWN, 40, progress = 0f))
     }
 }

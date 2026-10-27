@@ -35,14 +35,16 @@ enum class HrCue { BIG_UP, SMALL_UP, ON_TARGET, SMALL_DOWN, BIG_DOWN }
  *   the warm-up, so it pushes harder as you go. Being above it is fine.
  * - Hard: 85–95%, steering to the 88–92% middle.
  * - Recovery: 65–75%, steering to 68–72% (NTNU recommends ~70% to clear lactate).
- * - Cool-down: 60% or below. Going easier is never wrong.
+ * - Cool-down: ease down gradually. The ceiling falls from 75% to 60% over the cool-down, so you
+ *   don't drop straight to 60%. Being below it is fine.
  */
 object HrTargets {
     fun cue(phase: PhaseType, bpm: Int, maxHr: Int, phaseProgress: Float): HrCue {
         val pct = bpm * 100f / maxHr
+        val progress = phaseProgress.coerceIn(0f, 1f)
         return when (phase) {
             PhaseType.WARM_UP -> {
-                val floor = 60f + 10f * phaseProgress.coerceIn(0f, 1f)
+                val floor = 60f + 10f * progress
                 when {
                     pct >= floor -> HrCue.ON_TARGET
                     pct >= floor - 5f -> HrCue.SMALL_UP
@@ -51,10 +53,13 @@ object HrTargets {
             }
             PhaseType.HARD -> banded(pct, low = 85f, high = 95f)
             PhaseType.RECOVERY -> banded(pct, low = 65f, high = 75f)
-            PhaseType.COOL_DOWN -> when {
-                pct <= 60f -> HrCue.ON_TARGET
-                pct <= 65f -> HrCue.SMALL_DOWN
-                else -> HrCue.BIG_DOWN
+            PhaseType.COOL_DOWN -> {
+                val ceiling = 75f - 15f * progress
+                when {
+                    pct <= ceiling -> HrCue.ON_TARGET
+                    pct <= ceiling + 5f -> HrCue.SMALL_DOWN
+                    else -> HrCue.BIG_DOWN
+                }
             }
         }
     }
