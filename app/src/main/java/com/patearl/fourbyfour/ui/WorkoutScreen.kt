@@ -69,15 +69,16 @@ fun WorkoutScreen(
         CurvedLayout(Modifier.fillMaxSize().padding(10.dp), anchor = 270f) {
             curvedText(
                 text = formatCountdown(state.remainingMs),
-                fontSize = 22.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Medium,
                 color = if (paused) Color.Gray else Color.White,
             )
         }
-        // Heart rate sits exactly at the vertical centre, the widest part of the screen.
+        // Heart rate sits just below centre, in the wide part of the screen, leaving room for the
+        // countdown above and keeping the buttons near the bottom edge.
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             Column(
-                Modifier.weight(1f),
+                Modifier.weight(1.3f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom,
             ) {
@@ -95,7 +96,7 @@ fun WorkoutScreen(
                 )
             }
             HeartRateRow(state.heartRate, maxHr, phase.type, state.phaseProgress)
-            Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(Modifier.weight(0.7f), horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(Modifier.height(4.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Button(
