@@ -78,7 +78,7 @@ fun WorkoutScreen(
         // countdown above and keeping the buttons near the bottom edge.
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             Column(
-                Modifier.weight(1.3f),
+                Modifier.weight(1.25f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom,
             ) {
@@ -96,7 +96,7 @@ fun WorkoutScreen(
                 )
             }
             HeartRateRow(state.heartRate, maxHr, phase.type, state.phaseProgress)
-            Column(Modifier.weight(0.7f), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(Modifier.weight(0.75f), horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(Modifier.height(4.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Button(
