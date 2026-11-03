@@ -150,9 +150,9 @@ private fun HeartRateRow(bpm: Int?, maxHr: Int, phase: PhaseType, phaseProgress:
             when (cue) {
                 HrCue.ON_TARGET -> Icon(Icons.Filled.Favorite, "Heart rate", tint = color, modifier = Modifier.size(24.dp))
                 HrCue.SMALL_UP -> Icon(ArrowUp, "Slightly low", tint = color, modifier = Modifier.size(18.dp))
-                HrCue.BIG_UP -> Icon(ArrowUp, "Too low", tint = color, modifier = Modifier.size(34.dp))
+                HrCue.BIG_UP -> Icon(BoldArrowUp, "Too low", tint = color, modifier = Modifier.size(34.dp))
                 HrCue.SMALL_DOWN -> Icon(ArrowDown, "Slightly high", tint = color, modifier = Modifier.size(18.dp))
-                HrCue.BIG_DOWN -> Icon(ArrowDown, "Too high", tint = color, modifier = Modifier.size(34.dp))
+                HrCue.BIG_DOWN -> Icon(BoldArrowDown, "Too high", tint = color, modifier = Modifier.size(34.dp))
             }
         }
         Spacer(Modifier.width(4.dp))
@@ -202,5 +202,36 @@ private val ArrowDown: ImageVector = materialIcon(name = "ArrowDown") {
         moveTo(20f, 12f); lineToRelative(-1.41f, -1.41f); lineTo(13f, 16.17f); verticalLineTo(4f)
         horizontalLineToRelative(-2f); verticalLineToRelative(12.17f); lineToRelative(-5.58f, -5.59f)
         lineTo(4f, 12f); lineToRelative(8f, 8f); close()
+    }
+}
+
+/** Heavier arrows for the "big" cues: thicker shaft and head than [ArrowUp]/[ArrowDown]. */
+private val BoldArrowUp: ImageVector = materialIcon(name = "BoldArrowUp") {
+    materialPath {
+        moveTo(12f, 2.5f)
+        lineTo(21.5f, 12f)
+        lineTo(18.7f, 14.8f)
+        lineTo(14f, 10.1f)
+        lineTo(14f, 21.5f)
+        lineTo(10f, 21.5f)
+        lineTo(10f, 10.1f)
+        lineTo(5.3f, 14.8f)
+        lineTo(2.5f, 12f)
+        close()
+    }
+}
+
+private val BoldArrowDown: ImageVector = materialIcon(name = "BoldArrowDown") {
+    materialPath {
+        moveTo(12f, 21.5f)
+        lineTo(21.5f, 12f)
+        lineTo(18.7f, 9.2f)
+        lineTo(14f, 13.9f)
+        lineTo(14f, 2.5f)
+        lineTo(10f, 2.5f)
+        lineTo(10f, 13.9f)
+        lineTo(5.3f, 9.2f)
+        lineTo(2.5f, 12f)
+        close()
     }
 }
