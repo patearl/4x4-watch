@@ -79,8 +79,8 @@ fun WorkoutScreen(
             )
             Text(
                 text = formatCountdown(state.remainingMs),
-                fontSize = 42.sp,
-                lineHeight = 46.sp,
+                fontSize = 26.sp,
+                lineHeight = 30.sp,
                 fontWeight = FontWeight.Medium,
                 // Tabular digits so the countdown doesn't shift sideways as it ticks.
                 style = TextStyle(fontFeatureSettings = "tnum"),
@@ -133,28 +133,28 @@ private fun HeartRateRow(bpm: Int?, maxHr: Int, phase: PhaseType, phaseProgress:
     val zone = bpm?.let { HrZone.of(it, maxHr) }
     val color = zone?.color ?: Color.Gray
     val cue = if (bpm != null) HrTargets.cue(phase, bpm, maxHr, phaseProgress) else HrCue.ON_TARGET
-    Row(Modifier.height(26.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.height(46.dp), verticalAlignment = Alignment.CenterVertically) {
         // Fixed-size slot so swapping heart/arrows never moves the layout.
-        Box(Modifier.size(26.dp), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(34.dp), contentAlignment = Alignment.Center) {
             when (cue) {
-                HrCue.ON_TARGET -> Icon(Icons.Filled.Favorite, "Heart rate", tint = color, modifier = Modifier.size(16.dp))
-                HrCue.SMALL_UP -> Icon(ArrowUp, "Slightly low", tint = color, modifier = Modifier.size(14.dp))
-                HrCue.BIG_UP -> Icon(ArrowUp, "Too low", tint = color, modifier = Modifier.size(26.dp))
-                HrCue.SMALL_DOWN -> Icon(ArrowDown, "Slightly high", tint = color, modifier = Modifier.size(14.dp))
-                HrCue.BIG_DOWN -> Icon(ArrowDown, "Too high", tint = color, modifier = Modifier.size(26.dp))
+                HrCue.ON_TARGET -> Icon(Icons.Filled.Favorite, "Heart rate", tint = color, modifier = Modifier.size(24.dp))
+                HrCue.SMALL_UP -> Icon(ArrowUp, "Slightly low", tint = color, modifier = Modifier.size(18.dp))
+                HrCue.BIG_UP -> Icon(ArrowUp, "Too low", tint = color, modifier = Modifier.size(34.dp))
+                HrCue.SMALL_DOWN -> Icon(ArrowDown, "Slightly high", tint = color, modifier = Modifier.size(18.dp))
+                HrCue.BIG_DOWN -> Icon(ArrowDown, "Too high", tint = color, modifier = Modifier.size(34.dp))
             }
         }
         Spacer(Modifier.width(4.dp))
         Text(
             text = bpm?.toString() ?: "--",
             color = color,
-            fontSize = 20.sp,
-            lineHeight = 24.sp,
+            fontSize = 40.sp,
+            lineHeight = 44.sp,
             fontWeight = FontWeight.Bold,
         )
         if (bpm != null) {
             Spacer(Modifier.width(4.dp))
-            Text("${bpm * 100 / maxHr}%", color = color, style = MaterialTheme.typography.caption2)
+            Text("${bpm * 100 / maxHr}%", color = color, fontSize = 15.sp, fontWeight = FontWeight.Medium)
         }
     }
 }
