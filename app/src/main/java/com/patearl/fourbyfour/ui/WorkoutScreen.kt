@@ -25,16 +25,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.wear.compose.foundation.CurvedLayout
+
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.curvedText
 import androidx.wear.compose.material.dialog.Alert
 import androidx.wear.compose.material.dialog.Dialog
 import com.patearl.fourbyfour.workout.PhaseType
@@ -63,49 +65,57 @@ fun WorkoutScreen(
             trackColor = accent.copy(alpha = 0.2f),
             strokeWidth = 6.dp,
         )
-        // Sizes are fixed so the content stays inside the ring whatever the phase or HR cue.
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = phase.type.label.uppercase(),
-                color = accent,
-                fontWeight = FontWeight.Bold,
-                fontSize = if (phase.type == PhaseType.HARD) 18.sp else 16.sp,
-                lineHeight = 20.sp,
-            )
-            Text(
-                text = if (phase.round > 0) "Round ${phase.round} of ${WorkoutPlan.ROUNDS}" else " ",
-                fontSize = 12.sp,
-                lineHeight = 14.sp,
-            )
-            Text(
+        // Remaining time curves along the top edge, just inside the ring.
+        CurvedLayout(Modifier.fillMaxSize().padding(10.dp), anchor = 270f) {
+            curvedText(
                 text = formatCountdown(state.remainingMs),
-                fontSize = 26.sp,
-                lineHeight = 30.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Medium,
-                // Tabular digits so the countdown doesn't shift sideways as it ticks.
-                style = TextStyle(fontFeatureSettings = "tnum"),
                 color = if (paused) Color.Gray else Color.White,
             )
+        }
+        // Heart rate sits exactly at the vertical centre, the widest part of the screen.
+        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom,
+            ) {
+                Text(
+                    text = phase.type.label.uppercase(),
+                    color = accent,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = if (phase.type == PhaseType.HARD) 18.sp else 16.sp,
+                    lineHeight = 20.sp,
+                )
+                Text(
+                    text = if (phase.round > 0) "Round ${phase.round} of ${WorkoutPlan.ROUNDS}" else " ",
+                    fontSize = 12.sp,
+                    lineHeight = 14.sp,
+                )
+            }
             HeartRateRow(state.heartRate, maxHr, phase.type, state.phaseProgress)
-            Spacer(Modifier.height(2.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Button(
-                    onClick = if (paused) onResume else onPause,
-                    modifier = Modifier.size(ButtonDefaults.ExtraSmallButtonSize),
-                    colors = ButtonDefaults.secondaryButtonColors(),
-                ) {
-                    if (paused) {
-                        Icon(Icons.Filled.PlayArrow, "Resume", Modifier.size(18.dp))
-                    } else {
-                        Text("❚❚", fontSize = 10.sp)
+            Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                Spacer(Modifier.height(4.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Button(
+                        onClick = if (paused) onResume else onPause,
+                        modifier = Modifier.size(ButtonDefaults.ExtraSmallButtonSize),
+                        colors = ButtonDefaults.secondaryButtonColors(),
+                    ) {
+                        if (paused) {
+                            Icon(Icons.Filled.PlayArrow, "Resume", Modifier.size(18.dp))
+                        } else {
+                            Text("❚❚", fontSize = 10.sp)
+                        }
                     }
-                }
-                Button(
-                    onClick = { confirmStop = true },
-                    modifier = Modifier.size(ButtonDefaults.ExtraSmallButtonSize),
-                    colors = ButtonDefaults.secondaryButtonColors(),
-                ) {
-                    Icon(Icons.Filled.Close, "Stop", Modifier.size(18.dp))
+                    Button(
+                        onClick = { confirmStop = true },
+                        modifier = Modifier.size(ButtonDefaults.ExtraSmallButtonSize),
+                        colors = ButtonDefaults.secondaryButtonColors(),
+                    ) {
+                        Icon(Icons.Filled.Close, "Stop", Modifier.size(18.dp))
+                    }
                 }
             }
         }
